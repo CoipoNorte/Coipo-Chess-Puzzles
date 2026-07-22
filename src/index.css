@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #1b1a18;
+  --color-bg-secondary: #242320;
+  --color-bg-card: #2f2d2a;
+  --color-bg-elevated: #3d3b37;
+  --color-text-primary: #f0ede8;
+  --color-text-secondary: #b5b1ab;
+  --color-text-muted: #7d7a75;
+  --color-accent-green: #81b64c;
+  --color-accent-gold: #f0b429;
+  --color-accent-red: #e5533d;
+  --color-accent-blue: #5ba4cf;
+  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%; width: 100%; overflow: hidden;
+  font-family: var(--font-family-sans);
+  background-color: #1b1a18;
+  color: #f0ede8;
+  user-select: none; -webkit-user-select: none;
+}
+
+/* ── Reusable card ── */
+.card {
+  background-color: #2f2d2a;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+/* ── Small badge/chip ── */
+.chip {
+  background-color: #3d3b37;
+  border-radius: 8px;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background-color: #81b64c;
+  border: none; border-radius: 12px;
+  padding: 12px 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #2f2d2a;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+/* ── Animations ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(7px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(2px); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+
+.animate-shake { animation: shake 0.5s ease-in-out; }
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+.animate-slide-up { animation: slideUp 0.35s ease-out; }

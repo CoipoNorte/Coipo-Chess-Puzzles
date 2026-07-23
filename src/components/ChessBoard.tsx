@@ -1,22 +1,24 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { type Square } from 'chess.js';
 import { usePuzzleStore } from '../store/puzzleStore';
 import { ChessPiece } from './ChessPieces';
 
-
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
-const ChessBoard: React.FC = () => {
+interface Props {
+  areaWidth: number;
+  areaHeight: number;
+}
+
+const ChessBoard: React.FC<Props> = ({ areaWidth, areaHeight }) => {
   const {
     chess, boardOrientation, selectedSquare, legalMoves,
     lastMove, status, lastMoveResult, hintSquare, showHint,
     selectSquare, makeMove, wrongMoveAnim, animatingPiece,
   } = usePuzzleStore();
 
-  const wrapRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
-  const [boardSize, setBoardSize] = useState(300);
   const [dragState, setDragState] = useState<{
     square: Square; pieceType: string; pieceColor: 'w' | 'b';
     x: number; y: number; startX: number; startY: number; isDragging: boolean;
@@ -25,26 +27,14 @@ const ChessBoard: React.FC = () => {
   const [, setTick] = useState(0);
   useEffect(() => { setTick(v => v + 1); }, [lastMove, status, selectedSquare, lastMoveResult, wrongMoveAnim, animatingPiece]);
 
-  // Board = min(wrapper width, available height * --board-max-height%), capped at --board-max, snapped to 8
-  useEffect(() => {
-    const update = () => {
-      if (wrapRef.current) {
-        const availableW = wrapRef.current.clientWidth; // clientWidth already excludes padding
-        // Read CSS custom properties for responsive board sizing
-        const root = getComputedStyle(document.documentElement);
-        const boardMax = parseInt(root.getPropertyValue('--board-max')) || 520;
-        const maxHeightPct = parseInt(root.getPropertyValue('--board-max-height')) || 85;
-        const availableH = window.innerHeight * (maxHeightPct / 100);
-        const capped = Math.min(availableW, availableH, boardMax);
-        setBoardSize(Math.max(160, Math.floor(capped / 8) * 8)); // minimum 160px
-      }
-    };
-    update();
-    window.addEventListener('resize', update);
-    const ro = new ResizeObserver(update);
-    if (wrapRef.current) ro.observe(wrapRef.current);
-    return () => { window.removeEventListener('resize', update); ro.disconnect(); };
-  }, []);
+  // Board size: fill the available area, keeping it square
+  // Subtract padding (24px horizontal) and player bars (~60px vertical)
+  const boardSize = useMemo(() => {
+    const maxW = areaWidth - 24;       // 12px padding each side
+    const maxH = areaHeight - 60;      // room for 2 player bars
+    const raw = Math.min(maxW, maxH);
+    return Math.max(160, Math.floor(raw / 8) * 8);
+  }, [areaWidth, areaHeight]);
 
   const sq = boardSize / 8;
   const ps = sq * 0.86;
@@ -112,29 +102,30 @@ const ChessBoard: React.FC = () => {
   }, [dragState, sq, dF, dR, makeMove]);
 
   const shadow = lastMoveResult === 'correct'
-    ? '0 0 24px rgba(129,182,76,0.45)'
+    ? '0 0 24px rgba(129,182,76,0.4)'
     : lastMoveResult === 'wrong'
-    ? '0 0 24px rgba(229,83,61,0.45)'
-    : '0 4px 20px rgba(0,0,0,0.5)';
+    ? '0 0 24px rgba(229,83,61,0.4)'
+    : '0 4px 16px rgba(0,0,0,0.4)';
+
+  const coordFont = Math.max(8, Math.min(sq * 0.22, 13));
 
   return (
-    // Wrapper fills width, board centers inside it
-    <div ref={wrapRef} className="board-wrapper">
+    <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
       <div
         ref={boardRef}
         className={status === 'wrong' ? 'animate-shake' : ''}
         style={{
           position: 'relative',
           width: boardSize, height: boardSize,
-          borderRadius: 6, overflow: 'hidden',
+          borderRadius: 4, overflow: 'hidden',
           boxShadow: shadow, touchAction: 'none',
+          flexShrink: 0,
         }}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={() => setDragState(null)}
         onPointerLeave={() => { if (dragState?.isDragging) setDragState(null); }}
       >
-        {/* Squares */}
         {dR.map((rank, ri) => dF.map((file, fi) => {
           const s = file + rank;
           const light = isL(fi, ri);
@@ -146,8 +137,7 @@ const ChessBoard: React.FC = () => {
           const hiddenByAnim = animatingPiece && animatingPiece.from === s;
 
           return (
-            <div
-              key={s}
+            <div key={s}
               style={{
                 position: 'absolute', left: fi * sq, top: ri * sq,
                 width: sq, height: sq, backgroundColor: bg,
@@ -155,49 +145,20 @@ const ChessBoard: React.FC = () => {
               onPointerDown={e => onDown(e, s)}
               onClick={() => { if (status === 'playing') selectSquare(s as Square); }}
             >
-              {/* Coord labels */}
               {fi === 0 && (
-                <span style={{
-                  position: 'absolute', top: 2, left: 3,
-                  fontSize: Math.max(9, sq * 0.19), fontWeight: 700, lineHeight: 1,
-                  color: light ? '#779556' : '#ebecd0',
-                }}>{rank}</span>
+                <span style={{ position: 'absolute', top: 1, left: 2, fontSize: coordFont, fontWeight: 700, lineHeight: 1, color: light ? '#779556' : '#ebecd0' }}>{rank}</span>
               )}
               {ri === 7 && (
-                <span style={{
-                  position: 'absolute', bottom: 1, right: 3,
-                  fontSize: Math.max(9, sq * 0.19), fontWeight: 700, lineHeight: 1,
-                  color: light ? '#779556' : '#ebecd0',
-                }}>{file}</span>
+                <span style={{ position: 'absolute', bottom: 0, right: 2, fontSize: coordFont, fontWeight: 700, lineHeight: 1, color: light ? '#779556' : '#ebecd0' }}>{file}</span>
               )}
-
-              {/* Legal move dot */}
               {legal && !has && (
-                <div style={{
-                  position: 'absolute', top: '50%', left: '50%',
-                  transform: 'translate(-50%,-50%)',
-                  width: sq * 0.32, height: sq * 0.32,
-                  borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.15)',
-                }} />
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: sq * 0.3, height: sq * 0.3, borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.15)' }} />
               )}
-              {/* Legal capture ring */}
               {legal && has && (
-                <div style={{
-                  position: 'absolute', top: '50%', left: '50%',
-                  transform: 'translate(-50%,-50%)',
-                  width: sq * 0.88, height: sq * 0.88,
-                  borderRadius: '50%',
-                  border: `${Math.max(3, sq * 0.07)}px solid rgba(0,0,0,0.15)`,
-                  boxSizing: 'border-box',
-                }} />
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: sq * 0.85, height: sq * 0.85, borderRadius: '50%', border: `${Math.max(2, sq * 0.06)}px solid rgba(0,0,0,0.15)`, boxSizing: 'border-box' }} />
               )}
-
-              {/* Piece — hidden if being animated from this square */}
               {piece && !dragged && !hiddenByAnim && (
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <ChessPiece piece={piece.type} color={piece.color} size={ps} />
                 </div>
               )}
@@ -205,13 +166,9 @@ const ChessBoard: React.FC = () => {
           );
         }))}
 
-        {/* Wrong move ghost */}
         {wrongMoveAnim && <Ghost a={wrongMoveAnim} pos={sqPos} ps={ps} sq={sq} />}
-
-        {/* Sliding animated piece */}
         {animatingPiece && <SlidingPiece a={animatingPiece} pos={sqPos} ps={ps} sq={sq} />}
 
-        {/* Drag piece */}
         {dragState?.isDragging && (
           <div style={{
             position: 'absolute', zIndex: 50,
@@ -223,20 +180,9 @@ const ChessBoard: React.FC = () => {
           </div>
         )}
 
-        {/* Loading */}
         {status === 'loading' && (
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div style={{
-              width: 36, height: 36,
-              border: '3px solid rgba(255,255,255,0.8)',
-              borderTopColor: 'transparent',
-              borderRadius: '50%',
-              animation: 'spin 0.7s linear infinite',
-            }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 32, height: 32, border: '3px solid rgba(255,255,255,0.7)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
           </div>
         )}
       </div>
@@ -244,11 +190,9 @@ const ChessBoard: React.FC = () => {
   );
 };
 
-// Wrong-move ghost overlay
 const Ghost: React.FC<{
   a: { from: string; to: string; pieceType: string; pieceColor: 'w' | 'b' };
-  pos: (s: string) => { x: number; y: number };
-  ps: number; sq: number;
+  pos: (s: string) => { x: number; y: number }; ps: number; sq: number;
 }> = ({ a, pos, ps, sq }) => {
   const [phase, setPhase] = useState<'go' | 'back' | 'done'>('go');
   useEffect(() => {
@@ -260,47 +204,32 @@ const Ghost: React.FC<{
   const t = phase === 'go' ? pos(a.to) : pos(a.from);
   const o = (sq - ps) / 2;
   return (
-    <div style={{
-      position: 'absolute', zIndex: 40,
-      left: t.x + o, top: t.y + o,
-      width: ps, height: ps,
-      opacity: phase === 'go' ? 0.6 : 1,
-      transition: 'left 0.3s ease, top 0.3s ease, opacity 0.2s',
-    }}>
+    <div style={{ position: 'absolute', zIndex: 40, left: t.x + o, top: t.y + o, width: ps, height: ps, opacity: phase === 'go' ? 0.6 : 1, transition: 'left 0.3s ease, top 0.3s ease, opacity 0.2s' }}>
       <ChessPiece piece={a.pieceType} color={a.pieceColor} size={ps} />
     </div>
   );
 };
 
-// Sliding piece — animates from one square to another with CSS transition
 const SlidingPiece: React.FC<{
   a: { from: string; to: string; pieceType: string; pieceColor: 'w' | 'b' };
-  pos: (s: string) => { x: number; y: number };
-  ps: number; sq: number;
+  pos: (s: string) => { x: number; y: number }; ps: number; sq: number;
 }> = ({ a, pos, ps, sq }) => {
   const [arrived, setArrived] = useState(false);
   const fromPos = pos(a.from);
   const toPos = pos(a.to);
   const o = (sq - ps) / 2;
-
-  // Start at 'from', then transition to 'to' on next frame
   useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setArrived(true));
-    });
+    const raf = requestAnimationFrame(() => { requestAnimationFrame(() => setArrived(true)); });
     return () => cancelAnimationFrame(raf);
   }, []);
-
   const target = arrived ? toPos : fromPos;
-
   return (
     <div style={{
       position: 'absolute', zIndex: 45,
-      left: target.x + o,
-      top: target.y + o,
+      left: target.x + o, top: target.y + o,
       width: ps, height: ps,
       transition: arrived ? 'left 0.3s ease, top 0.3s ease' : 'none',
-      filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.35))',
+      filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
     }}>
       <ChessPiece piece={a.pieceType} color={a.pieceColor} size={ps} />
     </div>

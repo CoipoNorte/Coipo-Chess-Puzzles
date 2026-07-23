@@ -15,378 +15,60 @@
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-*, *::before, *::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html {
+  height: 100%;
+  /* Use dvh to account for Chrome mobile URL bar */
+  height: 100dvh;
 }
 
-html, body, #root {
-  height: 100dvh; height: 100vh; /* fallback */
-  width: 100%; overflow: hidden;
+body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   font-family: var(--font-family-sans);
   background-color: #1b1a18;
   color: #f0ede8;
   user-select: none; -webkit-user-select: none;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* Safe area padding for notched devices */
-.safe-area-top { padding-top: env(safe-area-inset-top, 0px); }
-.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
-.safe-area-left { padding-left: env(safe-area-inset-left, 0px); }
-.safe-area-right { padding-right: env(safe-area-inset-right, 0px); }
-
-/* Full viewport height containers */
-.viewport-height {
-  height: 100dvh;
-}
-
-/* Bottom sheet panel with scroll and safe-area support */
-.bottom-sheet {
-  max-height: 85dvh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-@supports not (height: 85dvh) {
-  .bottom-sheet {
-    max-height: 85vh;
-  }
-}
-
-/* Fallback for browsers without dvh support */
-@supports not (height: 100dvh) {
-  .viewport-height {
-    height: 100vh;
-  }
-}
-
-/* ── Responsive CSS custom properties ── */
-:root {
-  --page-padding: 16px;
-  --board-max: 520px;
-  --board-max-height: 85;
-  --panel-padding: 24px;
-  --card-padding: 14px;
-  --gap-sm: 8px;
-  --gap-md: 12px;
-  --gap-lg: 20px;
-  --font-title: 22px;
-  --font-nav: 18px;
-  --font-heading: 16px;
-  --font-subtitle: 15px;
-  --font-body: 14px;
-  --font-small: 13px;
-  --font-caption: 12px;
-  --font-micro: 11px;
-}
-
-/* iPhone SE / small phones (320px) */
-@media (max-width: 349px) {
-  :root {
-    --page-padding: 10px;
-    --board-max: 296px;
-    --board-max-height: 80;
-    --panel-padding: 16px;
-    --card-padding: 10px;
-    --gap-sm: 6px;
-    --gap-md: 10px;
-    --gap-lg: 14px;
-    --font-title: 20px;
-    --font-nav: 16px;
-    --font-heading: 15px;
-    --font-subtitle: 14px;
-    --font-body: 13px;
-    --font-small: 12px;
-    --font-caption: 11px;
-    --font-micro: 10px;
-  }
-}
-
-/* iPhone 6/7/8 / iPhone X logical width (375px) */
-@media (min-width: 350px) and (max-width: 413px) {
-  :root {
-    --page-padding: 14px;
-    --board-max: 347px;
-    --board-max-height: 82;
-    --panel-padding: 20px;
-    --card-padding: 12px;
-    --gap-sm: 7px;
-    --gap-md: 11px;
-    --gap-lg: 16px;
-    --font-title: 21px;
-    --font-nav: 17px;
-    --font-heading: 15px;
-    --font-subtitle: 14px;
-    --font-body: 13px;
-    --font-small: 12px;
-    --font-caption: 11px;
-    --font-micro: 10px;
-  }
-}
-
-/* iPhone Plus / Max (414px) */
-@media (min-width: 414px) and (max-width: 767px) {
-  :root {
-    --page-padding: 16px;
-    --board-max: 382px;
-    --board-max-height: 85;
-    --panel-padding: 24px;
-    --card-padding: 14px;
-    --gap-sm: 8px;
-    --gap-md: 12px;
-    --gap-lg: 20px;
-    --font-title: 22px;
-    --font-nav: 18px;
-    --font-heading: 16px;
-    --font-subtitle: 15px;
-    --font-body: 14px;
-    --font-small: 13px;
-    --font-caption: 12px;
-    --font-micro: 11px;
-  }
-}
-
-/* iPad / tablets (768px+) */
-@media (min-width: 768px) {
-  :root {
-    --page-padding: 24px;
-    --board-max: 520px;
-    --board-max-height: 85;
-    --panel-padding: 32px;
-    --card-padding: 16px;
-    --gap-sm: 10px;
-    --gap-md: 16px;
-    --gap-lg: 24px;
-    --font-title: 24px;
-    --font-nav: 20px;
-    --font-heading: 17px;
-    --font-subtitle: 16px;
-    --font-body: 15px;
-    --font-small: 14px;
-    --font-caption: 13px;
-    --font-micro: 12px;
-  }
-}
-
-/* ── Responsive utility classes ── */
-.page-padding {
-  padding-left: var(--page-padding);
-  padding-right: var(--page-padding);
-}
-
-.page-padding-top {
-  padding-top: var(--page-padding);
-}
-
-.page-padding-bottom {
-  padding-bottom: var(--page-padding);
-}
-
-/* Responsive font-size utilities */
-.font-title { font-size: var(--font-title); }
-.font-nav { font-size: var(--font-nav); }
-.font-heading { font-size: var(--font-heading); }
-.font-subtitle { font-size: var(--font-subtitle); }
-.font-body { font-size: var(--font-body); }
-.font-small { font-size: var(--font-small); }
-.font-caption { font-size: var(--font-caption); }
-.font-micro { font-size: var(--font-micro); }
-
-/* Responsive gap utilities */
-.gap-sm { gap: var(--gap-sm); }
-.gap-md { gap: var(--gap-md); }
-.gap-lg { gap: var(--gap-lg); }
-
-/* ── Shared landscape panel styles (all orientations) ── */
-@media (orientation: landscape) {
-  .panel-overlay {
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: flex-end;
-  }
-
-  .panel-card {
-    max-height: 100dvh;
-    border-radius: 24px 0 0 24px;
-    overflow-y: auto;
-    animation: slideRight 0.35s ease-out;
-  }
-
-  .bottom-sheet {
-    max-height: 100dvh;
-  }
-
-  /* Hide the drag handle in landscape side panel */
-  .panel-handle {
-    display: none;
-  }
-}
-
-/* Tablets in landscape — generous board, normal spacing */
-@media (orientation: landscape) and (min-height: 500px) {
-  :root {
-    --board-max-height: 75;
-    --board-max: 400px;
-    --page-padding: 16px;
-    --panel-padding: 20px;
-    --card-padding: 12px;
-    --gap-sm: 8px;
-    --gap-md: 12px;
-    --gap-lg: 16px;
-    --font-title: 22px;
-    --font-nav: 17px;
-    --font-heading: 15px;
-    --font-subtitle: 14px;
-    --font-body: 13px;
-    --font-small: 12px;
-    --font-caption: 11px;
-    --font-micro: 10px;
-  }
-
-  .panel-card { max-width: 360px; }
-}
-
-/* Phones in landscape — compact board, tight spacing */
-@media (orientation: landscape) and (max-height: 500px) {
-  :root {
-    --board-max-height: 65;
-    --board-max: 320px;
-    --page-padding: 8px;
-    --panel-padding: 12px;
-    --card-padding: 8px;
-    --gap-sm: 4px;
-    --gap-md: 6px;
-    --gap-lg: 10px;
-    --font-title: 18px;
-    --font-nav: 15px;
-    --font-heading: 14px;
-    --font-subtitle: 13px;
-    --font-body: 12px;
-    --font-small: 11px;
-    --font-caption: 10px;
-    --font-micro: 9px;
-  }
-
-  .panel-card { max-width: 320px; }
-}
-
-/* Very small landscape (e.g. 320×568 rotated) */
-@media (orientation: landscape) and (max-height: 350px) {
-  :root {
-    --board-max-height: 60;
-    --board-max: 260px;
-    --page-padding: 6px;
-    --panel-padding: 8px;
-    --card-padding: 6px;
-    --gap-sm: 3px;
-    --gap-md: 5px;
-    --gap-lg: 8px;
-    --font-title: 16px;
-    --font-nav: 13px;
-    --font-heading: 12px;
-    --font-subtitle: 11px;
-    --font-body: 11px;
-    --font-small: 10px;
-    --font-caption: 9px;
-    --font-micro: 8px;
-  }
-
-  .panel-card {
-    max-width: 260px;
-  }
-}
-
-.board-wrapper {
-  width: 100%;
-  padding: 0 var(--page-padding);
-  display: flex;
-  justify-content: center;
-}
-
-.panel-content {
-  padding: 0 var(--panel-padding) var(--panel-padding) var(--panel-padding);
-}
-
-/* ── Reusable card ── */
 .card {
   background-color: #2f2d2a;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 14px;
-  padding: var(--card-padding);
+  border-radius: 12px;
+  padding: 10px 12px;
 }
-
-/* ── Small badge/chip ── */
 .chip {
   background-color: #3d3b37;
-  border-radius: 8px;
-  padding: 3px 8px;
-  display: inline-flex;
-  align-items: center;
+  border-radius: 6px;
+  padding: 2px 7px;
+  display: inline-flex; align-items: center;
 }
-
-/* ── Buttons ── */
 .btn-primary {
   background-color: #81b64c;
-  border: none; border-radius: 12px;
-  padding: 12px 24px;
+  border: none; border-radius: 10px;
+  padding: 10px 20px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
-
 .btn-secondary {
   background-color: #2f2d2a;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 8px 14px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
 }
 
-/* ── Panel overlay & card ── */
-.panel-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.panel-card {
-  position: relative;
-  width: 100%;
-  max-width: 480px;
-  background-color: #242320;
-  border-radius: 24px 24px 0 0;
-}
-
-/* ── Animations ── */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-8px); }
-  30% { transform: translateX(7px); }
-  45% { transform: translateX(-6px); }
-  60% { transform: translateX(5px); }
-  75% { transform: translateX(-3px); }
-  90% { transform: translateX(2px); }
+  0%,100%{transform:translateX(0)} 15%{transform:translateX(-8px)} 30%{transform:translateX(7px)}
+  45%{transform:translateX(-6px)} 60%{transform:translateX(5px)} 75%{transform:translateX(-3px)} 90%{transform:translateX(2px)}
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
-@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-@keyframes rotateHint {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-30deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(30deg); }
-}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
 .animate-shake { animation: shake 0.5s ease-in-out; }
 .animate-fade-in { animation: fadeIn 0.3s ease-out; }
 .animate-slide-up { animation: slideUp 0.35s ease-out; }
-.animate-slide-right { animation: slideRight 0.35s ease-out; }

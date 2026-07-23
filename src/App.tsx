@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { usePuzzleStore } from './store/puzzleStore';
 import NavBar from './components/NavBar';
 import PuzzleHeader from './components/PuzzleHeader';
@@ -10,13 +10,14 @@ import Explanation from './components/Explanation';
 import PlayerBar from './components/PlayerBar';
 import StatsPanel from './components/StatsPanel';
 import SettingsPanel from './components/SettingsPanel';
-import OrientationHint from './components/OrientationHint';
 
 const App: React.FC = () => {
-  const { loadPuzzle, currentPuzzle } = usePuzzleStore();
+  const { loadPuzzle, currentPuzzle, status } = usePuzzleStore();
   const [showStats, setShowStats] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const middleRef = useRef<HTMLDivElement>(null);
+  const [boardArea, setBoardArea] = useState<{ w: number; h: number }>({ w: 300, h: 300 });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,70 +28,76 @@ const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Measure the middle area precisely
+  useEffect(() => {
+    const update = () => {
+      if (middleRef.current) {
+        setBoardArea({ w: middleRef.current.clientWidth, h: middleRef.current.clientHeight });
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('resize', update);
+    const ro = new ResizeObserver(update);
+    if (middleRef.current) ro.observe(middleRef.current);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('resize', update);
+      ro.disconnect();
+    };
+  }, [showSplash]);
+
   if (showSplash) return <SplashScreen />;
 
+  const showExtra = status === 'completed';
+
   return (
-    <div className="viewport-height safe-area-top safe-area-bottom" style={{
-      width: '100%',
+    <div style={{
+      height: '100dvh', width: '100vw',
       backgroundColor: '#1b1a18',
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
-      <div style={{
-        flex: 1,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        {/* Nav — fixed top feel */}
-        <div style={{ marginBottom: 4 }}>
-          <NavBar onOpenStats={() => setShowStats(true)} onOpenSettings={() => setShowSettings(true)} />
-        </div>
-
-        {/* Goal card + rating info */}
-        <div style={{ marginBottom: 10 }}>
-          <PuzzleHeader />
-        </div>
-
-        {/* Opponent */}
-        <PlayerBar position="top" />
-
-        {/* Board */}
-        <div style={{ marginTop: 4, marginBottom: 4 }}>
-          <ChessBoard />
-        </div>
-
-        {/* Player */}
-        <PlayerBar position="bottom" />
-
-        {/* Gap before bottom controls */}
-        <div style={{ height: 14 }} />
-
-        {/* Status card */}
-        <div style={{ marginBottom: 12 }}>
-          <PuzzleStatusBar />
-        </div>
-
-        {/* Action buttons */}
-        <div style={{ marginBottom: 12 }}>
-          <ActionButtons />
-        </div>
-
-        {/* Move history */}
-        <div style={{ marginBottom: 12 }}>
-          <MoveHistory />
-        </div>
-
-        {/* Explanation after solving */}
-        <div style={{ marginBottom: 28 }}>
-          <Explanation />
-        </div>
+      {/* TOP */}
+      <div style={{ flexShrink: 0 }}>
+        <NavBar onOpenStats={() => setShowStats(true)} onOpenSettings={() => setShowSettings(true)} />
+        <PuzzleHeader />
       </div>
 
-      {/* Orientation hint */}
-      <OrientationHint />
+      {/* MIDDLE — board area, flex: 1 fills all remaining space */}
+      <div ref={middleRef} style={{
+        flex: 1, minHeight: 0,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+      }}>
+        <PlayerBar position="top" />
+        <ChessBoard areaWidth={boardArea.w} areaHeight={boardArea.h} />
+        <PlayerBar position="bottom" />
+      </div>
 
-      {/* Modals */}
+      {/* BOTTOM */}
+      <div style={{
+        flexShrink: 0,
+        maxHeight: showExtra ? '38%' : undefined,
+        overflowY: showExtra ? 'auto' : undefined,
+        paddingBottom: 'env(safe-area-inset-bottom, 6px)',
+      }}>
+        <div style={{ height: 6 }} />
+        <PuzzleStatusBar />
+        <div style={{ height: 8 }} />
+        <ActionButtons />
+        <div style={{ height: 6 }} />
+        <MoveHistory />
+        {showExtra && (
+          <>
+            <div style={{ height: 8 }} />
+            <Explanation />
+            <div style={{ height: 12 }} />
+          </>
+        )}
+      </div>
+
       <StatsPanel isOpen={showStats} onClose={() => setShowStats(false)} />
       <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
@@ -98,16 +105,16 @@ const App: React.FC = () => {
 };
 
 const SplashScreen: React.FC = () => (
-  <div className="viewport-height safe-area-top safe-area-bottom" style={{
-    width: '100%', backgroundColor: '#1b1a18',
+  <div style={{
+    height: '100dvh', width: '100vw', backgroundColor: '#1b1a18',
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
   }}>
     <div style={{
-      width: 100, height: 100, backgroundColor: '#81b64c', borderRadius: 24,
+      width: 80, height: 80, backgroundColor: '#81b64c', borderRadius: 20,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      marginBottom: 24, boxShadow: '0 8px 32px rgba(129,182,76,0.4)',
+      marginBottom: 20, boxShadow: '0 6px 24px rgba(129,182,76,0.4)',
     }}>
-      <svg width="56" height="56" viewBox="0 0 45 45">
+      <svg width="44" height="44" viewBox="0 0 45 45">
         <g fill="none" fillRule="evenodd" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21" fill="#fff"/>
           <path d="M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3" fill="#fff"/>
@@ -115,8 +122,8 @@ const SplashScreen: React.FC = () => (
         </g>
       </svg>
     </div>
-    <p style={{ fontSize: 26, fontWeight: 800, color: '#f0ede8', marginBottom: 2 }}>Coipo Chess</p>
-    <p style={{ fontSize: 14, color: '#7d7a75' }}>Puzzles — Entrena tu visión táctica</p>
+    <p style={{ fontSize: 22, fontWeight: 800, color: '#f0ede8', marginBottom: 2 }}>Coipo Chess</p>
+    <p style={{ fontSize: 13, color: '#7d7a75' }}>Puzzles</p>
   </div>
 );
 

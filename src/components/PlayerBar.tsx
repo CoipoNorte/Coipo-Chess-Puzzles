@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { usePuzzleStore } from '../store/puzzleStore';
 
+
 interface PlayerBarProps {
   position: 'top' | 'bottom';
 }
@@ -35,7 +36,7 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ position }) => {
   }, [chess, color, lastMove, status]);
 
   return (
-    <div style={{ padding: '3px 16px' }}>
+    <div className="page-padding" style={{ paddingTop: 3, paddingBottom: 3 }}>
       <div style={{
         display: 'flex', flexDirection: 'row', alignItems: 'center',
         padding: '8px 12px',
@@ -49,14 +50,13 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ position }) => {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           marginRight: 10, flexShrink: 0,
         }}>
-          <span style={{ fontSize: 14 }}>{isPlayer ? '👤' : '🤖'}</span>
+          <span className="font-body">{isPlayer ? '👤' : '🤖'}</span>
         </div>
 
         {/* Name + caps */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            <span style={{
-              fontSize: 14, fontWeight: 700,
+            <span className="font-body" style={{ fontWeight: 700,
               color: isActive ? '#f0ede8' : '#7d7a75',
               marginRight: 6,
             }}>
@@ -67,9 +67,9 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ position }) => {
           {captured.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 1 }}>
               {captured.slice(0, 8).map((c, i) => (
-                <span key={i} style={{ fontSize: 12, opacity: 0.5, marginRight: 1 }}>{c}</span>
+                <span key={i} className="font-caption" style={{ opacity: 0.5, marginRight: 1 }}>{c}</span>
               ))}
-              {matDiff > 0 && <span style={{ fontSize: 11, fontWeight: 700, color: '#7d7a75', marginLeft: 3 }}>+{matDiff}</span>}
+              {matDiff > 0 && <span className="font-micro" style={{ fontWeight: 700, color: '#7d7a75', marginLeft: 3 }}>+{matDiff}</span>}
             </div>
           )}
         </div>
@@ -79,8 +79,8 @@ const PlayerBar: React.FC<PlayerBarProps> = ({ position }) => {
           padding: '4px 10px', borderRadius: 8,
           backgroundColor: isActive ? '#f0ede8' : '#2f2d2a',
         }}>
-          <span style={{
-            fontSize: 13, fontWeight: 700, fontFamily: 'monospace',
+          <span className="font-small" style={{
+            fontFamily: 'monospace', fontWeight: 700,
             color: isActive ? '#1b1a18' : '#7d7a75',
           }}>∞</span>
         </div>

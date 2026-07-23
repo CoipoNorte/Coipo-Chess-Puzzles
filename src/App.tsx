@@ -10,6 +10,7 @@ import Explanation from './components/Explanation';
 import PlayerBar from './components/PlayerBar';
 import StatsPanel from './components/StatsPanel';
 import SettingsPanel from './components/SettingsPanel';
+import OrientationHint from './components/OrientationHint';
 
 const App: React.FC = () => {
   const { loadPuzzle, currentPuzzle } = usePuzzleStore();
@@ -29,8 +30,8 @@ const App: React.FC = () => {
   if (showSplash) return <SplashScreen />;
 
   return (
-    <div style={{
-      height: '100%', width: '100%',
+    <div className="viewport-height safe-area-top safe-area-bottom" style={{
+      width: '100%',
       backgroundColor: '#1b1a18',
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
@@ -86,6 +87,9 @@ const App: React.FC = () => {
         </div>
       </div>
 
+      {/* Orientation hint */}
+      <OrientationHint />
+
       {/* Modals */}
       <StatsPanel isOpen={showStats} onClose={() => setShowStats(false)} />
       <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
@@ -94,8 +98,8 @@ const App: React.FC = () => {
 };
 
 const SplashScreen: React.FC = () => (
-  <div style={{
-    height: '100%', width: '100%', backgroundColor: '#1b1a18',
+  <div className="viewport-height safe-area-top safe-area-bottom" style={{
+    width: '100%', backgroundColor: '#1b1a18',
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
   }}>
     <div style={{

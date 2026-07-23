@@ -20,26 +20,22 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+      className="panel-overlay"
       onClick={onClose}
     >
       <div className="animate-fade-in" style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)' }} />
 
       <div
-        className="animate-slide-up"
-        style={{
-          position: 'relative', width: '100%', maxWidth: 480,
-          backgroundColor: '#242320', borderRadius: '24px 24px 0 0',
-        }}
+        className="animate-slide-up bottom-sheet panel-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 12 }}>
+        <div className="panel-handle" style={{ display: 'flex', justifyContent: 'center', padding: 12 }}>
           <div style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.15)' }} />
         </div>
 
-        <div style={{ padding: '0 24px 32px 24px' }}>
-          <p style={{ fontSize: 22, fontWeight: 800, color: '#f0ede8', marginBottom: 20 }}>⚙️ Configuración</p>
+        <div className="panel-content">
+          <p className="font-title" style={{ fontWeight: 800, color: '#f0ede8', marginBottom: 20 }}>⚙️ Configuración</p>
 
           {/* Sound Toggle */}
           <button onClick={toggleSound} style={{
@@ -53,8 +49,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
             marginBottom: 16,
           }}>
             <div style={{ textAlign: 'left' }}>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#f0ede8' }}>🔊 Sonido</p>
-              <p style={{ fontSize: 13, color: '#7d7a75', marginTop: 4 }}>Efectos al mover piezas</p>
+              <p className="font-heading" style={{ fontWeight: 700, color: '#f0ede8' }}>🔊 Sonido</p>
+              <p className="font-small" style={{ color: '#7d7a75', marginTop: 4 }}>Efectos al mover piezas</p>
             </div>
             <div style={{
               width: 52, height: 30, borderRadius: 15,
@@ -74,8 +70,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
 
           {/* About */}
           <div className="card" style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#f0ede8', marginBottom: 8 }}>Acerca de</p>
-            <p style={{ fontSize: 13, color: '#7d7a75', lineHeight: 1.6 }}>
+            <p className="font-subtitle" style={{ fontWeight: 700, color: '#f0ede8', marginBottom: 8 }}>Acerca de</p>
+            <p className="font-small" style={{ color: '#7d7a75', lineHeight: 1.6 }}>
               Chess Puzzles es un entrenador de tácticas de ajedrez. Cada puzzle indica
               qué tipo de jugada debes encontrar: mate, captura, clavada, horquilla,
               sacrificio, desarrollo, y más. Diseñado para una futura migración a React Native con Expo.
@@ -84,7 +80,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose }) => {
 
           {/* Close */}
           <button onClick={onClose} className="btn-primary" style={{ width: '100%' }}>
-            <span style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>Cerrar</span>
+            <span className="font-heading" style={{ color: '#fff', fontWeight: 700 }}>Cerrar</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { usePuzzleStore } from '../store/puzzleStore';
 
+
 const PuzzleStatusBar: React.FC = () => {
   const { status, boardOrientation, currentPuzzle, stats, wrongCount } = usePuzzleStore();
   const color = boardOrientation === 'white' ? 'Blancas' : 'Negras';
@@ -33,10 +34,10 @@ const PuzzleStatusBar: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: '0 16px' }}>
+    <div className="page-padding">
       <div style={{
         backgroundColor: bg, border: `1px solid ${border}`,
-        borderRadius: 16, padding: 16,
+        borderRadius: 16, padding: 'var(--card-padding)',
         display: 'flex', flexDirection: 'row', alignItems: 'center',
       }}>
         <div style={{
@@ -50,8 +51,8 @@ const PuzzleStatusBar: React.FC = () => {
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 14, fontWeight: 700, color: '#f0ede8' }}>{title}</p>
-          <p style={{ fontSize: 12, color: '#7d7a75', marginTop: 2 }}>{sub}</p>
+          <p className="font-body" style={{ fontWeight: 700, color: '#f0ede8' }}>{title}</p>
+          <p className="font-caption" style={{ color: '#7d7a75', marginTop: 2 }}>{sub}</p>
         </div>
 
         {status === 'completed' && wrongCount === 0 && (
@@ -62,7 +63,7 @@ const PuzzleStatusBar: React.FC = () => {
             marginLeft: 10, flexShrink: 0,
           }}>
             <span style={{ fontSize: 14, marginRight: 3 }}>🔥</span>
-            <span style={{ color: '#81b64c', fontWeight: 700, fontSize: 14 }}>{stats.streak}</span>
+            <span className="font-body" style={{ color: '#81b64c', fontWeight: 700 }}>{stats.streak}</span>
           </div>
         )}
       </div>

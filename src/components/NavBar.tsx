@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 interface NavBarProps {
   onOpenStats: () => void;
   onOpenSettings: () => void;
@@ -7,7 +8,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ onOpenStats, onOpenSettings }) => {
   return (
-    <div style={{ padding: '16px 16px 8px 16px' }}>
+    <div className="page-padding" style={{ paddingBottom: 8 }}>
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -28,13 +29,13 @@ const NavBar: React.FC<NavBarProps> = ({ onOpenStats, onOpenSettings }) => {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 18, fontWeight: 800, color: '#f0ede8', lineHeight: 1.1 }}>Puzzles</p>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#7d7a75', letterSpacing: 1.5 }}>COIPO CHESS</p>
+            <p className="font-nav" style={{ fontWeight: 800, color: '#f0ede8', lineHeight: 1.1 }}>Puzzles</p>
+            <p className="font-caption" style={{ fontWeight: 600, color: '#7d7a75', letterSpacing: 1.5 }}>COIPO CHESS</p>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
+        <div className="gap-md" style={{ display: 'flex', flexDirection: 'row' }}>
           <button onClick={onOpenStats} className="btn-secondary" style={{ padding: 10, borderRadius: 12 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b5b1ab" strokeWidth="2">
               <path d="M18 20V10M12 20V4M6 20v-6"/>

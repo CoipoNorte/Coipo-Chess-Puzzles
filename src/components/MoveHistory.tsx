@@ -1,17 +1,18 @@
 import React from 'react';
 import { usePuzzleStore } from '../store/puzzleStore';
 
+
 const MoveHistory: React.FC = () => {
   const { moveHistory } = usePuzzleStore();
   if (moveHistory.length === 0) return null;
 
   return (
-    <div style={{ padding: '0 16px' }}>
+    <div className="page-padding">
       <div className="card">
-        <p style={{ fontSize: 11, fontWeight: 700, color: '#7d7a75', letterSpacing: 1.5, marginBottom: 10 }}>
+        <p className="font-micro" style={{ fontWeight: 700, color: '#7d7a75', letterSpacing: 1.5, marginBottom: 10 }}>
           JUGADAS
         </p>
-        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        <div className="gap-sm" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {moveHistory.map((m, i) => {
             const ok = m.isPlayer && m.isCorrect;
             const bad = m.isPlayer && !m.isCorrect;
@@ -23,15 +24,15 @@ const MoveHistory: React.FC = () => {
                 display: 'flex', flexDirection: 'row', alignItems: 'center',
               }}>
                 {m.isPlayer && (
-                  <span style={{ fontSize: 11, marginRight: 4, color: ok ? '#81b64c' : '#e5533d' }}>
+                  <span style={{ marginRight: 4, color: ok ? '#81b64c' : '#e5533d' }} className="font-micro">
                     {ok ? '✓' : '✗'}
                   </span>
                 )}
                 {!m.isPlayer && (
-                  <span style={{ fontSize: 11, marginRight: 4, opacity: 0.35, color: '#b5b1ab' }}>•</span>
+                  <span style={{ marginRight: 4, opacity: 0.35, color: '#b5b1ab' }} className="font-micro">•</span>
                 )}
-                <span style={{
-                  fontWeight: 700, fontFamily: 'monospace', fontSize: 13,
+                <span className="font-small" style={{
+                  fontFamily: 'monospace', fontWeight: 700,
                   color: ok ? '#81b64c' : bad ? '#e5533d' : '#b5b1ab',
                 }}>{m.san}</span>
               </div>

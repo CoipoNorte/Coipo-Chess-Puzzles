@@ -22,35 +22,31 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+      className="panel-overlay"
       onClick={onClose}
     >
       <div className="animate-fade-in" style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)' }} />
       
       <div
-        className="animate-slide-up"
-        style={{
-          position: 'relative', width: '100%', maxWidth: 480,
-          backgroundColor: '#242320', borderRadius: '24px 24px 0 0',
-        }}
+        className="animate-slide-up bottom-sheet panel-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 12 }}>
+        <div className="panel-handle" style={{ display: 'flex', justifyContent: 'center', padding: 12 }}>
           <div style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.15)' }} />
         </div>
 
-        <div style={{ padding: '0 24px 32px 24px' }}>
+        <div className="panel-content">
           {/* Title */}
-          <p style={{ fontSize: 22, fontWeight: 800, color: '#f0ede8', marginBottom: 20 }}>📊 Estadísticas</p>
+          <p className="font-title" style={{ fontWeight: 800, color: '#f0ede8', marginBottom: 20 }}>📊 Estadísticas</p>
 
           {/* Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+          <div className="gap-md" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', marginBottom: 20 }}>
             {statItems.map((s, i) => (
               <div key={i} className="card" style={{ padding: 16 }}>
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                   <span style={{ fontSize: 18, marginRight: 8 }}>{s.icon}</span>
-                  <span style={{ fontSize: 13, color: '#7d7a75' }}>{s.label}</span>
+                  <span className="font-small" style={{ color: '#7d7a75' }}>{s.label}</span>
                 </div>
                 <span style={{ fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</span>
               </div>
@@ -60,15 +56,15 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ isOpen, onClose }) => {
           {/* History */}
           {stats.puzzleHistory.length > 0 && (
             <div style={{ marginBottom: 20 }}>
-              <p style={{ color: '#7d7a75', fontSize: 12, fontWeight: 700, letterSpacing: 1.5, marginBottom: 10 }}>HISTORIAL</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <p className="font-caption" style={{ color: '#7d7a75', fontWeight: 700, letterSpacing: 1.5, marginBottom: 10 }}>HISTORIAL</p>
+              <div className="gap-sm" style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {stats.puzzleHistory.slice(-24).map((e, i) => (
                   <div key={i} style={{
                     width: 32, height: 32, borderRadius: 8,
                     backgroundColor: e.solved ? 'rgba(129,182,76,0.2)' : 'rgba(229,83,61,0.2)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: e.solved ? '#81b64c' : '#e5533d' }}>
+                    <span className="font-body" style={{ fontWeight: 700, color: e.solved ? '#81b64c' : '#e5533d' }}>
                       {e.solved ? '✓' : '✗'}
                     </span>
                   </div>
@@ -78,12 +74,12 @@ const StatsPanel: React.FC<StatsPanelProps> = ({ isOpen, onClose }) => {
           )}
 
           {/* Buttons */}
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 10 }}>
+          <div className="gap-md" style={{ display: 'flex', flexDirection: 'row' }}>
             <button onClick={onClose} className="btn-primary" style={{ flex: 1 }}>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>Continuar</span>
+              <span className="font-heading" style={{ color: '#fff', fontWeight: 700 }}>Continuar</span>
             </button>
             <button onClick={() => { if (confirm('¿Borrar estadísticas?')) resetStats(); }} className="btn-secondary">
-              <span style={{ color: '#7d7a75', fontWeight: 700, fontSize: 14 }}>Reset</span>
+              <span className="font-body" style={{ color: '#7d7a75', fontWeight: 700 }}>Reset</span>
             </button>
           </div>
         </div>

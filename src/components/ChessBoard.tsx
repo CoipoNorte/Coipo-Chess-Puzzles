@@ -3,6 +3,7 @@ import { type Square } from 'chess.js';
 import { usePuzzleStore } from '../store/puzzleStore';
 import { ChessPiece } from './ChessPieces';
 
+
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const RANKS = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
@@ -24,13 +25,18 @@ const ChessBoard: React.FC = () => {
   const [, setTick] = useState(0);
   useEffect(() => { setTick(v => v + 1); }, [lastMove, status, selectedSquare, lastMoveResult, wrongMoveAnim, animatingPiece]);
 
-  // Board = wrapper width (full width minus padding), capped at 520, snapped to 8
+  // Board = min(wrapper width, available height * --board-max-height%), capped at --board-max, snapped to 8
   useEffect(() => {
     const update = () => {
       if (wrapRef.current) {
-        const available = wrapRef.current.clientWidth;
-        const capped = Math.min(available, 520);
-        setBoardSize(Math.floor(capped / 8) * 8);
+        const availableW = wrapRef.current.clientWidth; // clientWidth already excludes padding
+        // Read CSS custom properties for responsive board sizing
+        const root = getComputedStyle(document.documentElement);
+        const boardMax = parseInt(root.getPropertyValue('--board-max')) || 520;
+        const maxHeightPct = parseInt(root.getPropertyValue('--board-max-height')) || 85;
+        const availableH = window.innerHeight * (maxHeightPct / 100);
+        const capped = Math.min(availableW, availableH, boardMax);
+        setBoardSize(Math.max(160, Math.floor(capped / 8) * 8)); // minimum 160px
       }
     };
     update();
@@ -113,7 +119,7 @@ const ChessBoard: React.FC = () => {
 
   return (
     // Wrapper fills width, board centers inside it
-    <div ref={wrapRef} style={{ width: '100%', padding: '0 16px', display: 'flex', justifyContent: 'center' }}>
+    <div ref={wrapRef} className="board-wrapper">
       <div
         ref={boardRef}
         className={status === 'wrong' ? 'animate-shake' : ''}
